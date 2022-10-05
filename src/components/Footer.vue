@@ -34,10 +34,10 @@
             <router-link class="link" :to="{ name: 'HomeView' }"
               >Home</router-link
             >
-            <!-- <router-link class="link" :to="{ name: 'BlogsView' }"
+            <router-link class="link" :to="{ name: 'BlogsView' }"
               >Blogs</router-link
             >
-
+            <!--
             <router-link v-if="user" class="link" :to="{ name: 'NewPostView' }"
               >Create Post</router-link
             >
@@ -59,7 +59,7 @@ export default {};
 <style lang="scss" scoped>
 footer {
   margin-top: auto;
-  padding: 100px 25px;
+  padding: 100px 250px;
   background-color: #303030;
   .container {
     display: flex;

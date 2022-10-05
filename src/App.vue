@@ -1,9 +1,9 @@
 <template>
   <div class="app-wrapper">
     <div class="app">
-      <Navigation />
+      <Navigation v-show="!navigation" />
       <router-view />
-      <Footer />
+      <Footer v-show="!navigation" />
     </div>
   </div>
 </template>
@@ -16,12 +16,34 @@ export default {
   name: "App",
   components: { Navigation, Footer },
   data() {
-    return {};
+    return {
+      navigation: null,
+    };
   },
-  created() {},
+  created() {
+    this.checkRoute();
+  },
   mounted() {},
-  methods: {},
-  watch: {},
+  methods: {
+    checkRoute() {
+      // $route - current route name
+      if (
+        this.$route.name === "LoginView" ||
+        this.$route.name === "RegisterView" ||
+        this.$route.name === "ForgotPasswordView"
+      ) {
+        this.navigation = true;
+        return;
+      }
+      this.navigation = false;
+    },
+  },
+  // Whenever the route is switched
+  watch: {
+    $route() {
+      this.checkRoute();
+    },
+  },
 };
 </script>
 
@@ -50,5 +72,83 @@ export default {
 }
 .link-light {
   color: #fff;
+}
+
+button,
+.router-button {
+  transition: 500ms ease all;
+  cursor: pointer;
+  margin-top: 24px;
+  padding: 12px 24px;
+  background-color: #303030;
+  color: #fff;
+  border-radius: 20px;
+  border: none;
+  text-transform: uppercase;
+  &:focus {
+    outline: none;
+  }
+  &:hover {
+    background-color: rgba(48, 48, 48, 0.7);
+  }
+}
+
+.button-ghost {
+  color: #000;
+  padding: 0;
+  border-radius: 0;
+  margin-top: 50px;
+  font-size: 15px;
+  font-weight: 500;
+  background-color: transparent;
+  @media (min-width: 700px) {
+    margin-top: 0;
+    margin-left: auto;
+  }
+  i {
+    margin-left: 8px;
+  }
+}
+
+.button-light {
+  background-color: transparent;
+  border: 2px solid #fff;
+  color: #fff;
+}
+.button-inactive {
+  pointer-events: none !important;
+  cursor: none !important;
+  background-color: rgba(128, 128, 128, 0.5) !important;
+}
+
+.blog-card-wrap {
+  position: relative;
+  padding: 80px 160px;
+  background-color: #f1f1f1;
+  @media (min-width: 500px) {
+    padding: 100px 160px;
+  }
+
+  .blog-cards {
+    display: grid;
+    gap: 32px;
+    grid-template-columns: 1fr;
+
+    @media (min-width: 500px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    @media (min-width: 900px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    @media (min-width: 1200px) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+}
+
+.error {
+  text-align: center;
+  font-size: 12px;
+  color: red;
 }
 </style>

@@ -1,5 +1,7 @@
-import firebase from "firebase/app";
-import "firebase/firestore";
+import { initializeApp } from "firebase/app";
+import { serverTimestamp } from "firebase/firestore";
+
+import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyArt_mU7iiVgsdKRsWF5TulMvM9j02qrKk",
@@ -15,9 +17,9 @@ const firebaseConfig = {
   appId: "1:206679491251:web:2c1ac5849385b3b588a6c6",
 };
 
-const firebaseApp = firebase.initializeApp(firebaseConfig);
-const timestamp = firebase.firestore.FieldValue.serverTimestamp;
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const timestamp = serverTimestamp;
 
 export { timestamp };
-
-export default firebaseApp.firestore();
+export default db;
