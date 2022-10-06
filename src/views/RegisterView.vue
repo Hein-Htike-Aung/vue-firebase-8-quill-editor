@@ -42,7 +42,6 @@
 <script>
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import db from "../firebase/firebaseInit";
-import { collection, addDoc } from "firebase/firestore";
 import { doc, setDoc } from "firebase/firestore";
 
 export default {

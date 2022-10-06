@@ -18,11 +18,12 @@
           <input type="password" placeholder="Password" v-model="password" />
           <i class="fa-solid fa-lock icon"></i>
         </div>
+        <div class="error" v-show="error">{{ errorMessage }}</div>
       </div>
       <router-link class="forgot-password" :to="{ name: 'ForgotPasswordView' }"
         >Forgot Your Password</router-link
       >
-      <button>Sign In</button>
+      <button @click.prevent="signIn">Sign In</button>
       <div class="angle"></div>
     </form>
     <!-- Image -->
@@ -31,6 +32,8 @@
 </template>
 
 <script>
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+
 export default {
   name: "LoginView",
   components: {},
@@ -38,7 +41,24 @@ export default {
     return {
       email: "",
       password: "",
+      error: false,
+      errorMessage: "",
     };
+  },
+  methods: {
+    async signIn() {
+      const firebaseAuth = getAuth();
+      signInWithEmailAndPassword(firebaseAuth, this.email, this.password)
+        .then(() => {
+          this.$router.push({ name: "HomeView" });
+          this.error = false;
+          this.errorMessage = "";
+        })
+        .catch((err) => {
+          this.error = true;
+          this.errorMessage = err.message;
+        });
+    },
   },
 };
 </script>

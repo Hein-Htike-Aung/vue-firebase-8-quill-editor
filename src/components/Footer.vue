@@ -37,13 +37,13 @@
             <router-link class="link" :to="{ name: 'BlogsView' }"
               >Blogs</router-link
             >
-            <!--
-            <router-link v-if="user" class="link" :to="{ name: 'NewPostView' }"
+
+            <router-link v-if="user" class="link" to="#"
               >Create Post</router-link
             >
             <router-link v-if="!user" class="link" :to="{ name: 'LoginView' }"
               >Login In / Register</router-link
-            > -->
+            >
           </ul>
         </div>
       </div>
@@ -53,9 +53,18 @@
     </div>
   </footer>
 </template>
+
 <script>
-export default {};
+export default {
+  name: "Footer",
+  computed: {
+    user() {
+      return this.$store.state.user;
+    },
+  },
+};
 </script>
+
 <style lang="scss" scoped>
 footer {
   margin-top: auto;
