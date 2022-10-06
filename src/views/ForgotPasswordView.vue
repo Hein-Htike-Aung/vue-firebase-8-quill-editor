@@ -59,6 +59,8 @@ export default {
       this.loading = true;
 
       const auth = getAuth();
+
+      // it was going into the spam folder in gmail
       sendPasswordResetEmail(auth, this.email)
         .then(() => {
           this.modalMessage =

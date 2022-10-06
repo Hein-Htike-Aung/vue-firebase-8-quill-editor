@@ -35,6 +35,8 @@ export default createStore({
     // blogPhotoName: "",
     // blogPhotoFileURL: null,
     // blogPhotoPreview: null,
+
+    /* User */
     user: null,
     profileAdmin: null,
     profileEmail: null,
@@ -45,13 +47,17 @@ export default createStore({
     profileInitials: null,
   },
   getters: {},
-  // commit will perform mutations
+  /* commit will perform mutations */
   mutations: {
     toggleEditPost(state, payload) {
       state.editPost = payload;
     },
     updateUser(state, payload) {
       state.user = payload;
+    },
+    setProfileAdmin(state, payload) {
+      state.profileAdmin = payload;
+      console.log(state.profileAdmin);
     },
     setProfileInfo(state, doc) {
       state.profileId = doc.id;
@@ -76,15 +82,21 @@ export default createStore({
       state.profileUsername = payload;
     },
   },
-  // dispatch will perform actions
+  /* dispatch will perform actions */
   actions: {
-    async getCurrentUser({ commit }) {
+    async getCurrentUser({ commit }, user) {
       const docRef = doc(db, "users", getAuth().currentUser.uid);
 
       const result = await getDoc(docRef);
 
       commit("setProfileInfo", result);
       commit("setProfileInitials");
+
+      // const token = await user.getIdTokenResult();
+      // const admin = await token.claims.admin;
+      // true for demo
+      const admin = true;
+      commit("setProfileAdmin", admin);
     },
     async updateUserSetting({ commit, state }) {
       const docRef = doc(db, "users", state.profileId);

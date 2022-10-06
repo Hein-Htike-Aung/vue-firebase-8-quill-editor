@@ -22,10 +22,12 @@ export default {
     };
   },
   created() {
-    getAuth().onAuthStateChanged((user) => {
+    getAuth().onAuthStateChanged(async (user) => {
       this.$store.commit("updateUser", user);
       if (user) {
-        this.$store.dispatch("getCurrentUser");
+        // const token = await user.getIdTokenResult();
+        // console.log(token.claims.admin);
+        this.$store.dispatch("getCurrentUser", user);
       }
     });
     this.checkRoute();
