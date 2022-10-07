@@ -8,13 +8,15 @@
         <i class="fa-solid fa-trash delete"></i>
       </div>
     </div>
-    <img
-      :src="require(`../assets/blogCards/${post.blogCoverPhoto}.jpg`)"
-      alt=""
-    />
+    <img :src="post.blogCoverPhoto" alt="" />
     <div class="info">
       <h4>{{ post.blogTitle }}</h4>
-      <h6>Posted on: {{ post.blogDate }}</h6>
+      <h6>
+        Posted on:
+        {{
+          new Date(post.blogDate).toLocaleString("en-us", { dateStyle: "long" })
+        }}
+      </h6>
       <router-link class="link" to="#"> View The post </router-link>
     </div>
   </div>
@@ -90,7 +92,7 @@ export default {
     border-radius: 8px 8px 0 0;
     z-index: 1;
     width: 100%;
-    min-height: 200px;
+    height: 200px;
     object-fit: cover;
   }
 

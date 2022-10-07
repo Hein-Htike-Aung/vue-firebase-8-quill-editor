@@ -14,7 +14,10 @@
           <router-link class="link" :to="{ name: 'BlogsView' }"
             >Blogs</router-link
           >
-          <router-link v-if="admin" class="link" to="#"
+          <router-link
+            v-if="admin"
+            class="link"
+            :to="{ name: 'CreatePostView' }"
             >Create Post</router-link
           >
           <router-link v-show="!user" class="link" :to="{ name: 'LoginView' }"
@@ -73,7 +76,9 @@
         <router-link class="link" :to="{ name: 'BlogsView' }"
           >Blogs</router-link
         >
-        <router-link v-if="admin" class="link" to="#">Create Post</router-link>
+        <router-link v-if="admin" class="link" :to="{ name: 'CreatePostView' }"
+          >Create Post</router-link
+        >
         <router-link v-show="!user" class="link" :to="{ name: 'LoginView' }"
           >Login/Register</router-link
         >
@@ -83,7 +88,8 @@
 </template>
 
 <script>
-import { getAuth } from "firebase/auth";
+import firebase from "firebase/app";
+import "firebase/auth";
 
 export default {
   name: "Navigation",
@@ -130,7 +136,7 @@ export default {
       }
     },
     signOut() {
-      getAuth().signOut();
+      firebase.auth().signOut();
 
       window.location.reload();
     },

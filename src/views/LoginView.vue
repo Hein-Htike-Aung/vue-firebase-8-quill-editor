@@ -32,7 +32,8 @@
 </template>
 
 <script>
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import firebase from "firebase/app";
+import "firebase/auth";
 
 export default {
   name: "LoginView",
@@ -47,8 +48,9 @@ export default {
   },
   methods: {
     async signIn() {
-      const firebaseAuth = getAuth();
-      signInWithEmailAndPassword(firebaseAuth, this.email, this.password)
+      firebase
+        .auth()
+        .signInWithEmailAndPassword(this.email, this.password)
         .then(() => {
           this.$router.push({ name: "HomeView" });
           this.error = false;

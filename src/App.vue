@@ -11,7 +11,8 @@
 <script>
 import Navigation from "./components/Navigation.vue";
 import Footer from "./components/Footer.vue";
-import { getAuth } from "firebase/auth";
+import firebase from "firebase/app";
+import "firebase/auth";
 
 export default {
   name: "App",
@@ -22,7 +23,7 @@ export default {
     };
   },
   created() {
-    getAuth().onAuthStateChanged(async (user) => {
+    firebase.auth().onAuthStateChanged((user) => {
       this.$store.commit("updateUser", user);
       if (user) {
         // const token = await user.getIdTokenResult();
@@ -31,6 +32,7 @@ export default {
       }
     });
     this.checkRoute();
+    this.$store.dispatch("getPosts");
   },
   mounted() {},
   methods: {

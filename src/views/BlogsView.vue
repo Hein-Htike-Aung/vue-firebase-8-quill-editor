@@ -5,11 +5,7 @@
         <span>Toggle Editing Post</span>
         <input type="checkbox" v-model="editPost" />
       </div>
-      <BlogCard
-        :post="post"
-        v-for="(post, idx) in sampleBlogCards"
-        :key="idx"
-      />
+      <BlogCard :post="post" v-for="(post, idx) in blogPosts" :key="idx" />
     </div>
   </div>
 </template>
@@ -23,8 +19,8 @@ export default {
     BlogCard,
   },
   computed: {
-    sampleBlogCards() {
-      return this.$store.state.sampleBlogCards;
+    blogPosts() {
+      return this.$store.state.blogPosts;
     },
     editPost: {
       get() {
@@ -40,7 +36,6 @@ export default {
   // vue2 - beforeDestroy
   beforeUnmount() {
     // Life cycle methods (before leave the view)
-    console.log("destroy");
     this.$store.commit("toggleEditPost", false);
   },
 };

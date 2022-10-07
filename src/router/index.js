@@ -7,6 +7,8 @@ import ForgotPasswordView from "../views/ForgotPasswordView.vue";
 import ProfileView from "../views/ProfileView.vue";
 import AdminView from "../views/AdminView.vue";
 import CreatePostView from "../views/CreatePostView.vue";
+import BlogPreviewView from "../views/BlogPreviewView.vue";
+import ViewBlogView from "../views/ViewBlogView.vue";
 
 const routes = [
   {
@@ -71,6 +73,22 @@ const routes = [
     component: CreatePostView,
     meta: {
       title: "CreatePost",
+    },
+  },
+  {
+    path: "/blog-preview",
+    name: "BlogPreviewView",
+    component: BlogPreviewView,
+    meta: {
+      title: "BlogPreview",
+    },
+  },
+  {
+    path: "/view-blog/:blogId",
+    name: "ViewBlog",
+    component: ViewBlogView,
+    meta: {
+      title: "ViewBlog",
     },
   },
 ];

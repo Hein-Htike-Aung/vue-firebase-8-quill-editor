@@ -1,40 +1,18 @@
 import { createStore } from "vuex";
+import firebase from "firebase/app";
+import "firebase/auth";
 import db from "../firebase/firebaseInit";
-import { getAuth } from "firebase/auth";
-import { doc, getDoc, setDoc } from "firebase/firestore";
 
 export default createStore({
   state: {
-    sampleBlogCards: [
-      {
-        blogTitle: "Blog Card #1",
-        blogCoverPhoto: "stock-1",
-        blogDate: "May 1, 2022",
-      },
-      {
-        blogTitle: "Blog Card #2",
-        blogCoverPhoto: "stock-2",
-        blogDate: "May 1, 2022",
-      },
-      {
-        blogTitle: "Blog Card #3",
-        blogCoverPhoto: "stock-3",
-        blogDate: "May 1, 2022",
-      },
-      {
-        blogTitle: "Blog Card #4",
-        blogCoverPhoto: "stock-4",
-        blogDate: "May 1, 2022",
-      },
-    ],
     editPost: null,
-    // blogPosts: [],
-    // postLoaded: null,
-    // blogHTML: "Write your blog title here...",
-    // blogTitle: "",
-    // blogPhotoName: "",
-    // blogPhotoFileURL: null,
-    // blogPhotoPreview: null,
+    blogPosts: [],
+    postLoaded: null,
+    blogHTML: "Write your blog title here...",
+    blogTitle: "",
+    blogPhotoName: "",
+    blogPhotoFileURL: null,
+    blogPhotoPreview: null,
 
     /* User */
     user: null,
@@ -46,18 +24,41 @@ export default createStore({
     profileId: null,
     profileInitials: null,
   },
-  getters: {},
+  getters: {
+    blogPostsFeed(state) {
+      return state.blogPosts.slice(0, 2);
+    },
+    blogPostsCards(state) {
+      return state.blogPosts.slice(2, 6);
+    },
+  },
   /* commit will perform mutations */
   mutations: {
+    // Blog Mutation
     toggleEditPost(state, payload) {
       state.editPost = payload;
     },
+    newBlogPost(state, payload) {
+      state.blogHTML = payload;
+    },
+    updateBlogTitle(state, payload) {
+      state.blogTitle = payload;
+    },
+    fileNameChange(state, payload) {
+      state.blogPhotoName = payload;
+    },
+    createFileURL(state, payload) {
+      state.blogPhotoFileURL = payload;
+    },
+    openPhotoPreview(state) {
+      state.blogPhotoPreview = !state.blogPhotoPreview;
+    },
+    // User Mutations
     updateUser(state, payload) {
       state.user = payload;
     },
     setProfileAdmin(state, payload) {
       state.profileAdmin = payload;
-      console.log(state.profileAdmin);
     },
     setProfileInfo(state, doc) {
       state.profileId = doc.id;
@@ -85,33 +86,50 @@ export default createStore({
   /* dispatch will perform actions */
   actions: {
     async getCurrentUser({ commit }, user) {
-      const docRef = doc(db, "users", getAuth().currentUser.uid);
+      const dataBase = db
+        .collection("users")
+        .doc(firebase.auth().currentUser.uid);
+      const dbResults = await dataBase.get();
 
-      const result = await getDoc(docRef);
-
-      commit("setProfileInfo", result);
+      commit("setProfileInfo", dbResults);
       commit("setProfileInitials");
 
       // const token = await user.getIdTokenResult();
       // const admin = await token.claims.admin;
-      // true for demo
       const admin = true;
+
       commit("setProfileAdmin", admin);
     },
     async updateUserSetting({ commit, state }) {
-      const docRef = doc(db, "users", state.profileId);
+      const dataBase = db.collection("users").doc(state.profileId);
 
-      await setDoc(
-        docRef,
-        {
-          firstName: state.profileFirstName,
-          lastName: state.profileLastName,
-          username: state.profileUsername,
-        },
-        { merge: true }
-      );
+      await dataBase.update({
+        firstName: state.profileFirstName,
+        lastName: state.profileLastName,
+        username: state.profileUsername,
+      });
 
       commit("setProfileInitials");
+    },
+    async getPosts({ state }) {
+      const dataBase = db.collection("blogPosts").orderBy("date", "desc");
+      const dbResults = await dataBase.get();
+
+      dbResults.forEach((doc) => {
+        if (!state.blogPosts.some((post) => post.blogID === doc.id)) {
+          const data = {
+            blogID: doc.data().blogID,
+            blogHTML: doc.data().blogHTML,
+            blogCoverPhoto: doc.data().blogCoverPhoto,
+            blogTitle: doc.data().blogTitle,
+            blogDate: doc.data().date,
+            blogCoverPhotoName: doc.data().blogCoverPhotoName,
+          };
+          state.blogPosts.push(data);
+        }
+      });
+
+      state.postLoaded = true;
     },
   },
   modules: {},

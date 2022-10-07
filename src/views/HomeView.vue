@@ -1,13 +1,13 @@
 <template lang="">
   <div class="home">
     <BlogPost v-if="!user" :post="welcomeScreen" />
-    <BlogPost :post="post" v-for="(post, idx) in smapleBlogPost" :key="idx" />
+    <BlogPost :post="post" v-for="(post, idx) in blogPostsFeed" :key="idx" />
     <div class="blog-card-wrap">
       <h3>View More Recent Blogs</h3>
       <div class="blog-cards">
         <BlogCard
           :post="post"
-          v-for="(post, idx) in sampleBlogCards"
+          v-for="(post, idx) in blogPostsCards"
           :key="idx"
         />
       </div>
@@ -55,10 +55,13 @@ export default {
       ],
     };
   },
-  // Retrieve data from state
   computed: {
-    sampleBlogCards() {
-      return this.$store.state.sampleBlogCards;
+    blogPostsCards() {
+      // Retrieve data from getters
+      return this.$store.getters.blogPostsCards;
+    },
+    blogPostsFeed() {
+      return this.$store.getters.blogPostsFeed;
     },
     user() {
       return this.$store.state.user;

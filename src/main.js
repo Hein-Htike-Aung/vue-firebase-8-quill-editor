@@ -2,11 +2,12 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
-import { getAuth } from "firebase/auth";
+import firebase from "firebase/app";
+import Vue3Editor from "vue3-editor";
 
 let app;
-getAuth().onAuthStateChanged(() => {
+firebase.auth().onAuthStateChanged(() => {
   if (!app) {
-    createApp(App).use(store).use(router).mount("#app");
+    createApp(App).use(store).use(Vue3Editor).use(router).mount("#app");
   }
 });

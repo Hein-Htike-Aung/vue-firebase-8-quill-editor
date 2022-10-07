@@ -38,7 +38,10 @@
               >Blogs</router-link
             >
 
-            <router-link v-if="admin" class="link" to="#"
+            <router-link
+              v-if="admin"
+              class="link"
+              :to="{ name: 'CreatePostView' }"
               >Create Post</router-link
             >
             <router-link v-if="!user" class="link" :to="{ name: 'LoginView' }"

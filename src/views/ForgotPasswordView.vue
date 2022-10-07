@@ -37,7 +37,8 @@
 <script>
 import Modal from "@/components/Modal.vue";
 import Loading from "@/components/Loading.vue";
-import { getAuth, sendPasswordResetEmail } from "firebase/auth";
+import firebase from "firebase/app";
+import "firebase/auth";
 
 export default {
   name: "ForgotPasswordView",
@@ -58,10 +59,9 @@ export default {
     resetPassword() {
       this.loading = true;
 
-      const auth = getAuth();
-
-      // it was going into the spam folder in gmail
-      sendPasswordResetEmail(auth, this.email)
+      firebase
+        .auth()
+        .sendPasswordResetEmail(this.email)
         .then(() => {
           this.modalMessage =
             "If your account exists, you will receive a email";

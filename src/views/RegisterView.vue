@@ -40,9 +40,9 @@
   </div>
 </template>
 <script>
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import firebase from "firebase/app";
+import "firebase/auth";
 import db from "../firebase/firebaseInit";
-import { doc, setDoc } from "firebase/firestore";
 
 export default {
   name: "RegisterView",
@@ -69,19 +69,17 @@ export default {
         this.error = false;
         this.errorMessage = "";
 
-        const firebaseAuth = getAuth();
+        const firebaseAuth = firebase.auth();
 
         // create account
-        const userCredential = await createUserWithEmailAndPassword(
-          firebaseAuth,
+        const createUser = await firebaseAuth.createUserWithEmailAndPassword(
           this.email,
           this.password
         );
 
-        const user = userCredential.user;
         // create user
-
-        await setDoc(doc(db, "users", user.uid), {
+        const dataBase = db.collection("users").doc(createUser.user.uid);
+        await dataBase.set({
           firstName: this.firstName,
           lastName: this.lastName,
           username: this.username,
@@ -93,7 +91,6 @@ export default {
 
         return;
       }
-      console.log("sdfsdf");
       this.error = true;
       this.errorMessage = "Please fill out all the fields";
       return;
