@@ -42,9 +42,9 @@
       </div>
       <!-- Buttons -->
       <div class="blog-actions">
-        <button @click="uploadBlog">Publish Blog</button>
+        <button @click="updateBlog">Save Changes</button>
         <router-link class="router-button" :to="{ name: 'BlogPreviewView' }"
-          >Post Preview</router-link
+          >Preview Changes</router-link
         >
       </div>
     </div>
@@ -63,19 +63,29 @@ import Loading from "@/components/Loading.vue";
 import db from "../firebase/firebaseInit";
 
 export default {
-  name: "CreatePostView",
+  name: "EditPostView",
   data() {
     return {
       file: null,
       error: false,
       errorMessage: "",
       loading: false,
+      routeID: null,
+      currentBlog: null,
       editorSettings: {
         modules: {
           imageResize: {},
         },
       },
     };
+  },
+  async mounted() {
+    this.routeID = this.$route.params.blogId;
+    this.currentBlog = await this.$store.state.blogPosts.filter((p) => {
+      return (p.blogID = this.routeID);
+    });
+    // update state
+    this.$store.commit("setBlogState", this.currentBlog[0]);
   },
   methods: {
     fileChange() {
@@ -93,10 +103,8 @@ export default {
       const docRef = storageRef.child(`documents/blogPostPhotos/${file.name}`);
       docRef.put(file).on(
         "state_changed",
-        (snapshot) => {
-        },
-        (err) => {
-        },
+        (snapshot) => {},
+        (err) => {},
         async () => {
           const downloadURL = await docRef.getDownloadURL();
           Editor.insertEmbed(cursorLocation, "image", downloadURL);
@@ -104,8 +112,11 @@ export default {
         }
       );
     },
-    uploadBlog() {
+    async updateBlog() {
+      const dataBase = await db.collection("blogPosts").doc(this.routeID);
+
       if (this.blogTitle !== 0 && this.blogHTML !== 0) {
+        // if the this.file is true, the user is updated with cover photo
         if (this.file) {
           this.loading = true;
           const storageRef = firebase.storage().ref();
@@ -114,27 +125,21 @@ export default {
           );
           docRef.put(this.file).on(
             "state_changed",
-            (snapshot) => {
-            },
+            (snapshot) => {},
             (err) => {
               this.loading = false;
             },
             async () => {
               const downloadURL = await docRef.getDownloadURL();
-              const timestamp = Date.now();
-              const dataBase = db.collection("blogPosts").doc();
 
-              await dataBase.set({
-                blogID: dataBase.id,
+              await dataBase.update({
                 blogHTML: this.blogHTML,
                 blogCoverPhoto: downloadURL,
                 blogCoverPhotoName: this.blogCoverPhotoName,
                 blogTitle: this.blogTitle,
-                profileId: this.profileId,
-                date: timestamp,
               });
               // refresh posts
-              await this.$store.dispatch("getPosts");
+              await this.$store.dispatch("updatePost", this.routeID);
 
               this.loading = false;
               this.$router.push({
@@ -145,11 +150,21 @@ export default {
           );
           return;
         } else {
-          this.error = true;
-          this.errorMessage = "Please ensure you uploaded a cover photo!";
-          setTimeout(() => {
-            this.error = false;
-          }, 5000);
+          // the user is updated title or blog html
+          this.loading = true;
+          await dataBase.update({
+            blogHTML: this.blogHTML,
+            blogTitle: this.blogTitle,
+          });
+
+          // update the store
+          await this.$store.dispatch("updatePost", this.routeID);
+          this.loading = false;
+          this.$router.push({
+            name: "ViewBlogView",
+            params: { blogId: dataBase.id },
+          });
+          return;
         }
       } else {
         this.error = true;

@@ -38,6 +38,15 @@ export default createStore({
     toggleEditPost(state, payload) {
       state.editPost = payload;
     },
+    filterBlogPost(state, payload) {
+      state.blogPosts = state.blogPosts.filter((p) => p.blogID !== payload);
+    },
+    setBlogState(state, payload) {
+      state.blogTitle = payload.blogTitle;
+      state.blogHTML = payload.blogHTML;
+      state.blogPhotoFileURL = payload.blogCoverPhoto;
+      state.blogPhotoName = payload.blogCoverPhotoName;
+    },
     newBlogPost(state, payload) {
       state.blogHTML = payload;
     },
@@ -130,6 +139,19 @@ export default createStore({
       });
 
       state.postLoaded = true;
+    },
+    async deletePost({ commit }, payload) {
+      // delete post
+      const post = await db.collection("blogPosts").doc(payload);
+      await post.delete();
+
+      // delete from store
+      commit("filterBlogPost", payload);
+    },
+    async updatePost({ commit, dispatch }, payload) {
+      commit("filterBlogPost", payload);
+
+      await dispatch("getPosts");
     },
   },
   modules: {},

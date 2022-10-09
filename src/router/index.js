@@ -9,6 +9,9 @@ import AdminView from "../views/AdminView.vue";
 import CreatePostView from "../views/CreatePostView.vue";
 import BlogPreviewView from "../views/BlogPreviewView.vue";
 import ViewBlogView from "../views/ViewBlogView.vue";
+import EditPostView from "../views/EditPostView.vue";
+import firebase from "firebase/app";
+import "firebase/auth";
 
 const routes = [
   {
@@ -17,6 +20,7 @@ const routes = [
     component: HomeView,
     meta: {
       title: "Home",
+      requiresAuth: false,
     },
   },
   {
@@ -25,6 +29,7 @@ const routes = [
     component: BlogsView,
     meta: {
       title: "Blogs",
+      requiresAuth: false,
     },
   },
   {
@@ -33,6 +38,7 @@ const routes = [
     component: LoginView,
     meta: {
       title: "Login",
+      requiresAuth: false,
     },
   },
   {
@@ -41,6 +47,7 @@ const routes = [
     component: RegisterView,
     meta: {
       title: "Register",
+      requiresAuth: false,
     },
   },
   {
@@ -49,6 +56,7 @@ const routes = [
     component: ForgotPasswordView,
     meta: {
       title: "ForgotPassword",
+      requiresAuth: false,
     },
   },
   {
@@ -57,6 +65,7 @@ const routes = [
     component: ProfileView,
     meta: {
       title: "Profile",
+      requiresAuth: true,
     },
   },
   {
@@ -65,6 +74,8 @@ const routes = [
     component: AdminView,
     meta: {
       title: "Admin",
+      requiresAuth: false,
+      requiresAdmin: true,
     },
   },
   {
@@ -73,6 +84,18 @@ const routes = [
     component: CreatePostView,
     meta: {
       title: "CreatePost",
+      requiresAuth: false,
+      requiresAdmin: true,
+    },
+  },
+  {
+    path: "/edit-post/:blogId",
+    name: "EditPostView",
+    component: EditPostView,
+    meta: {
+      title: "EditBlog",
+      requiresAuth: false,
+      requiresAdmin: true,
     },
   },
   {
@@ -81,14 +104,17 @@ const routes = [
     component: BlogPreviewView,
     meta: {
       title: "BlogPreview",
+      requiresAuth: false,
+      requiresAdmin: true,
     },
   },
   {
     path: "/view-blog/:blogId",
-    name: "ViewBlog",
+    name: "ViewBlogView",
     component: ViewBlogView,
     meta: {
       title: "ViewBlog",
+      requiresAuth: false,
     },
   },
 ];
@@ -101,6 +127,32 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   document.title = `${to.meta.title} | FireBlog`;
   next();
+});
+
+router.beforeEach(async (to, from, next) => {
+  let user = firebase.auth().currentUser;
+  let admin = null;
+
+  if (user) {
+    let token = await user.getIdTokenResult();
+    // admin = token.claims.admin;
+    admin = true;
+  }
+  if (to.matched.some((res) => res.meta.requiresAuth)) {
+    if (user) {
+      // if the user authenticated
+      if (to.matched.some((res) => res.meta.requiresAdmin)) {
+        if (admin) {
+          // if the user is admin
+          return next();
+        }
+        return next({ name: "HomeView" });
+      }
+      return next();
+    }
+    return next({ name: "HomeView" });
+  }
+  return next();
 });
 
 export default router;

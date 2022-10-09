@@ -2,9 +2,9 @@
   <div class="blog-card">
     <div v-show="editPost" class="icons">
       <div class="icon">
-        <i class="fa-solid fa-pen-to-square edit"></i>
+        <i @click="editBlog" class="fa-solid fa-pen-to-square edit"></i>
       </div>
-      <div class="icon">
+      <div @click="deletePost" class="icon">
         <i class="fa-solid fa-trash delete"></i>
       </div>
     </div>
@@ -17,7 +17,12 @@
           new Date(post.blogDate).toLocaleString("en-us", { dateStyle: "long" })
         }}
       </h6>
-      <router-link class="link" to="#"> View The post </router-link>
+      <router-link
+        class="link"
+        :to="{ name: 'ViewBlogView', params: { blogId: post.blogID } }"
+      >
+        View The post
+      </router-link>
     </div>
   </div>
 </template>
@@ -30,6 +35,17 @@ export default {
   computed: {
     editPost() {
       return this.$store.state.editPost;
+    },
+  },
+  methods: {
+    deletePost() {
+      this.$store.dispatch("deletePost", this.post.blogID);
+    },
+    editBlog() {
+      this.$router.push({
+        name: "EditPostView",
+        params: { blogId: this.post.blogID },
+      });
     },
   },
 };

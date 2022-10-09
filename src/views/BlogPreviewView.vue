@@ -1,8 +1,10 @@
 <template>
-  <div class="container quillWrapper">
-    <h2>{{ blogTitle }}</h2>
-    <img :src="blogCoverPhoto" alt="" />
-    <div class="post-content ql-editor" v-html="blogHTML"></div>
+  <div class="post-view">
+    <div class="container quillWrapper">
+      <h2>{{ blogTitle }}</h2>
+      <img :src="blogCoverPhoto" alt="" />
+      <div class="post-content ql-editor" v-html="blogHTML"></div>
+    </div>
   </div>
 </template>
 
@@ -23,12 +25,12 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .post-view {
   min-height: 100%;
 
   .container {
-    max-width: 100px;
+    width: 60%;
     padding: 60px 25px;
   }
 
@@ -44,6 +46,8 @@ export default {
 
   img {
     width: 100%;
+    height: 500px;
+    object-fit: cover;
     margin-bottom: 32px;
   }
 }
